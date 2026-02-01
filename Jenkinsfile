@@ -54,7 +54,7 @@ pipeline {
                     echo "Pushing to dockerHub repo..."
                     withDockerRegistry(credentialsId: 'docker_cred') {
                         IMAGE_OBJ.push()
-                        IMAGE_OBJ.push('latest') //push image with tag="latest "
+                        IMAGE_OBJ.push('latest') //push image with tag="latest"
                     }
                 }
             }
