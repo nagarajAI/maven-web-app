@@ -30,7 +30,10 @@ pipeline {
         stage('sonarqube'){
             steps{
                 withSonarQubeEnv('sonarqube') {
-                    sh 'mvn clean verify sonar:sonar '
+                    sh ''' 
+                        $SONAR_SCANNER/bin/sonar-scanner -Dsonar.projectName=maven-app \ 
+                        -Dsonar.projectKey=maven-app -Dsonar.java.binaries=target
+                    '''
                 }
             }
         }
