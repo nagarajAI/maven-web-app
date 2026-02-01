@@ -2,8 +2,20 @@ pipeline {
     agent any
     
     tools{
-        maven 'Maven-3.9.9'
+        maven 'M3'
+        jdk 'jdk17'
     }
+
+    environment {
+        SONAR_SCANNER= tool 'sonar-scanner'
+        KUBECONFIG = credentials('kube-config')
+        NO_PROXY = "192.0.0.100,127.0.0.1,localhost"
+
+        DOCKER_REPO='rayhubli'
+        IMAGE_NAME='maven_demo'
+        TAG=${env.BUILD_NUMBER}
+    }
+
     stages {
         stage('clone') {
             steps {
@@ -15,15 +27,39 @@ pipeline {
                  sh 'mvn clean package'
             }
         }
+        stage('sonarqube'){
+            steps{
+                withSonarQubeEnv(credentialsId: 'sonar-token') {
+                    sh 'mvn clean verify sonar:sonar '
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('docker image'){
             steps {
-                sh 'docker build -t ashokit/mavenwebapp .'
+                script{
+                    echo "Building docker image..."
+                    def IMAGE_OBJ= docker.build("$DOCKER_REPO/$IMAGE_NAME:$TAG")
+                    echo "Pushing to dockerHub repo..."
+                    withDockerRegistry(credentialsId: 'docker_cred') {
+                        IMAGE_OBJ.push()
+                    }
+                }
             }
         }
-        stage('k8s deploy'){
-            steps{
-               sh 'kubectl apply -f k8s-deploy.yml'
-            }
-        }
+       
+        // stage('k8s deploy'){
+        //     steps{
+        //        sh 'kubectl apply -f k8s-deploy.yml'
+        //     }
+        // }
     }
 }
