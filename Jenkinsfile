@@ -13,7 +13,7 @@ pipeline {
 
         DOCKER_REPO='rayhubli'
         IMAGE_NAME='maven_demo'
-        TAG=${env.BUILD_NUMBER}
+        TAG="${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -29,7 +29,7 @@ pipeline {
         }
         stage('sonarqube'){
             steps{
-                withSonarQubeEnv(credentialsId: 'sonar-token') {
+                withSonarQubeEnv('sonarqube') {
                     sh 'mvn clean verify sonar:sonar '
                 }
             }
