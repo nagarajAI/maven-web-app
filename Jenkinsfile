@@ -60,10 +60,10 @@ pipeline {
             }
         }
        
-        // stage('k8s deploy'){
-        //     steps{
-        //        sh 'kubectl apply -f k8s-deploy.yml'
-        //     }
-        // }
+        stage('k8s deploy'){
+            steps{
+               sh 'kubectl apply -f k8s-deploy.yml'
+            }
+        }
     }
 }
