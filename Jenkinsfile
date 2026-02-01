@@ -12,7 +12,7 @@ pipeline {
         NO_PROXY = "192.0.0.100,127.0.0.1,localhost"
 
         DOCKER_REPO='rayhubli'
-        IMAGE_NAME='maven_demo'
+        IMAGE_NAME='maven_app'
         TAG="${env.BUILD_NUMBER}"
     }
 
